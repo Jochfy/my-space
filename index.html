@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Space ✦ Weekly Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Instrument+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #f4d9d0;
+    --dusty-rose: #e8bdb3;
+    --mauve: #c9a4a0;
+    --cream: #fdf8f5;
+    --warm-white: #fefcfb;
+    --sage: #c4cfc2;
+    --sage-dark: #8fa08d;
+    --lavender: #d8d4e8;
+    --lavender-dark: #a8a0c0;
+    --caramel: #d4a87a;
+    --text-dark: #2d2420;
+    --text-mid: #6b5a56;
+    --text-light: #a08880;
+    --border: rgba(180,140,130,0.18);
+    --shadow: rgba(160,100,90,0.10);
+    --glass: rgba(253,248,245,0.7);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--cream);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 10% 0%, rgba(232,189,179,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 90% 100%, rgba(196,207,194,0.3) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(216,212,232,0.2) 0%, transparent 70%);
+    font-family: 'Instrument Sans', sans-serif;
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 32px 120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    margin-bottom: 56px;
+    animation: fadeSlideDown 0.8s ease both;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .week-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    background: rgba(201,164,160,0.15);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(38px, 6vw, 64px);
+    color: var(--text-dark);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--mauve);
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--text-light);
+    font-weight: 300;
+    margin-top: 10px;
+    letter-spacing: 0.03em;
+  }
+
+  .deco-line {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, var(--dusty-rose), transparent);
+    margin-top: 28px;
+    opacity: 0.5;
+  }
+
+  /* GRID LAYOUT */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+
+  .grid-2 { grid-column: span 2; }
+  .grid-3 { grid-column: span 3; }
+  .grid-1 { grid-column: span 1; }
+
+  /* CARD BASE */
+  .card {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 2px 24px var(--shadow);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    animation: fadeSlideUp 0.7s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card:hover {
+    box-shadow: 0 8px 40px rgba(160,100,90,0.15);
+    transform: translateY(-2px);
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 20px 20px 0 0;
+    opacity: 0.6;
+  }
+
+  .card.blush::after { background: linear-gradient(to right, var(--dusty-rose), var(--blush)); }
+  .card.sage::after { background: linear-gradient(to right, var(--sage), var(--sage-dark)); }
+  .card.lavender::after { background: linear-gradient(to right, var(--lavender), var(--lavender-dark)); }
+  .card.caramel::after { background: linear-gradient(to right, var(--caramel), #e8c090); }
+  .card.mauve::after { background: linear-gradient(to right, var(--mauve), #b89090); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .card-icon {
+    font-size: 18px;
+    line-height: 1;
+    opacity: 0.9;
+  }
+
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--text-dark);
+    letter-spacing: -0.01em;
+  }
+
+  .card-tag {
+    margin-left: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  /* MORNING ROUTINE */
+  .routine-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .routine-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    background: rgba(244,217,208,0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(201,164,160,0.2);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .routine-item:hover { background: rgba(244,217,208,0.5); }
+
+  .routine-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--mauve);
+    min-width: 46px;
+    font-weight: 700;
+  }
+
+  .routine-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--mauve);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .routine-check.checked {
+    background: var(--mauve);
+    border-color: var(--mauve);
+  }
+
+  .routine-check.checked::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+  }
+
+  .routine-label {
+    font-size: 13.5px;
+    color: var(--text-mid);
+    flex: 1;
+    font-weight: 400;
+  }
+
+  /* WEEKLY PLANNER */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+
+  .day-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .day-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-align: center;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .day-name.today { color: var(--mauve); }
+
+  .day-event {
+    padding: 7px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    line-height: 1.3;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  .day-event:hover { opacity: 0.8; }
+  .day-event.work { background: rgba(201,164,160,0.3); color: var(--mauve); }
+  .day-event.sport { background: rgba(196,207,194,0.4); color: var(--sage-dark); }
+  .day-event.perso { background: rgba(216,212,232,0.4); color: var(--lavender-dark); }
+  .day-event.food { background: rgba(212,168,122,0.2); color: #a07040; }
+  .day-event.empty { background: transparent; border: 1px dashed rgba(180,140,130,0.2); color: var(--text-light); font-size: 10px; cursor: default; }
+
+  .add-event-btn {
+    text-align: center;
+    font-size: 16px;
+    color: var(--border);
+    cursor: pointer;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  .add-event-btn:hover { background: rgba(201,164,160,0.15); color: var(--mauve); }
+
+  /* GOALS */
+  .goals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .goal-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .goal-item:last-child { border-bottom: none; }
+
+  .goal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .goal-dot.pink { background: var(--mauve); }
+  .goal-dot.green { background: var(--sage-dark); }
+  .goal-dot.purple { background: var(--lavender-dark); }
+  .goal-dot.caramel { background: var(--caramel); }
+
+  .goal-text {
+    font-size: 13.5px;
+    color: var(--text-mid);
+    flex: 1;
+  }
+
+  .goal-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .goal-status.progress { background: rgba(216,212,232,0.5); color: var(--lavender-dark); }
+  .goal-status.done { background: rgba(196,207,194,0.5); color: var(--sage-dark); }
+  .goal-status.todo { background: rgba(244,217,208,0.5); color: var(--mauve); }
+
+  /* HYDRATION */
+  .water-tracker {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .water-glasses {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px 0;
+  }
+
+  .glass {
+    width: 32px;
+    height: 38px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-size: 22px;
+    filter: grayscale(0.6) opacity(0.4);
+  }
+
+  .glass.filled {
+    filter: grayscale(0) opacity(1);
+    transform: scale(1.1);
+    animation: dropIn 0.3s ease;
+  }
+
+  @keyframes dropIn {
+    0% { transform: scale(0.7) translateY(-4px); }
+    80% { transform: scale(1.15); }
+    100% { transform: scale(1.1); }
+  }
+
+  .water-label {
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-light);
+  }
+
+  .water-count {
+    color: #7ab4cc;
+    font-weight: 700;
+  }
+
+  /* READING */
+  .book-item {
+    display: flex;
+    gap: 14px;
+    padding: 12px;
+    background: rgba(216,212,232,0.2);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(168,160,192,0.2);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .book-item:hover { background: rgba(216,212,232,0.35); }
+
+  .book-spine {
+    width: 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .book-info { flex: 1; }
+
+  .book-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 3px;
+  }
+
+  .book-author {
+    font-size: 11.5px;
+    color: var(--text-light);
+    font-style: italic;
+  }
+
+  .book-progress {
+    margin-top: 8px;
+    height: 3px;
+    background: rgba(168,160,192,0.2);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .book-progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(to right, var(--lavender-dark), var(--mauve));
+    transition: width 0.4s ease;
+  }
+
+  /* SPORT */
+  .sport-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .sport-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .sport-day-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    text-transform: uppercase;
+  }
+
+  .sport-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+  }
+
+  .sport-dot.done { background: rgba(196,207,194,0.5); border-color: var(--sage); }
+  .sport-dot.rest { background: rgba(244,217,208,0.3); border-color: rgba(201,164,160,0.3); }
+  .sport-dot:hover { transform: scale(1.1); }
+
+  .sport-type-tag {
+    font-size: 9px;
+    font-family: 'Space Mono', monospace;
+    color: var(--sage-dark);
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  /* MEAL PREP */
+  .meal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .meal-card {
+    padding: 12px;
+    border-radius: 12px;
+    background: rgba(212,168,122,0.12);
+    border: 1px solid rgba(212,168,122,0.25);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .meal-card:hover { background: rgba(212,168,122,0.22); }
+
+  .meal-day {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #a07040;
+    margin-bottom: 4px;
+  }
+
+  .meal-name {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+
+  .meal-type {
+    font-size: 10.5px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+
+  /* TODO */
+  .todo-section { margin-bottom: 16px; }
+
+  .todo-section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .todo-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(180,140,130,0.08);
+    transition: opacity 0.2s;
+  }
+
+  .todo-checkbox {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .todo-checkbox.checked {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+
+  .todo-checkbox.checked::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: white;
+  }
+
+  .todo-text {
+    font-size: 13px;
+    color: var(--text-mid);
+    transition: all 0.2s;
+  }
+
+  .todo-text.done {
+    text-decoration: line-through;
+    opacity: 0.45;
+  }
+
+  .todo-priority {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* MOOD */
+  .mood-row {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 16px;
+  }
+
+  .mood-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    transition: background 0.2s;
+  }
+
+  .mood-btn:hover { background: rgba(201,164,160,0.15); }
+  .mood-btn.selected { background: rgba(201,164,160,0.25); }
+
+  .mood-emoji { font-size: 26px; }
+  .mood-label { font-size: 9.5px; color: var(--text-light); font-family: 'Space Mono', monospace; }
+
+  .energy-bar-container {
+    margin-top: 4px;
+  }
+
+  .energy-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+
+  .energy-bar {
+    height: 6px;
+    background: rgba(180,140,130,0.15);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .energy-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(to right, var(--blush), var(--mauve));
+    transition: width 0.4s ease;
+  }
+
+  /* FINANCE */
+  .finance-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+
+  .finance-row:last-child { border-bottom: none; }
+
+  .finance-label {
+    font-size: 13px;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .finance-label span { font-size: 15px; }
+
+  .finance-amount {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .finance-amount.positive { color: var(--sage-dark); }
+  .finance-amount.negative { color: var(--mauve); }
+  .finance-amount.neutral { color: var(--text-mid); }
+
+  /* EVENING ROUTINE */
+  .evening-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .evening-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: rgba(216,212,232,0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(168,160,192,0.15);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .evening-item:hover { background: rgba(216,212,232,0.35); }
+
+  .evening-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--lavender-dark);
+    min-width: 42px;
+    font-weight: 700;
+  }
+
+  .evening-label {
+    font-size: 13px;
+    color: var(--text-mid);
+  }
+
+  .evening-check {
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--lavender-dark);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .evening-check.checked {
+    background: var(--lavender-dark);
+    border-color: var(--lavender-dark);
+  }
+
+  .evening-check.checked::after {
+    content: '✓';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+  }
+
+  /* QUOTE CARD */
+  .quote-card {
+    background: linear-gradient(135deg, rgba(232,189,179,0.4), rgba(216,212,232,0.4));
+    border: 1px solid rgba(201,164,160,0.25);
+    border-radius: 20px;
+    padding: 28px 32px;
+    text-align: center;
+    position: relative;
+  }
+
+  .quote-mark {
+    font-family: 'DM Serif Display', serif;
+    font-size: 64px;
+    color: var(--mauve);
+    opacity: 0.25;
+    line-height: 0.6;
+    position: absolute;
+    top: 20px;
+    left: 24px;
+  }
+
+  .quote-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: var(--text-dark);
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  .quote-author {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 10px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.1em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeSlideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+  .card:nth-child(6) { animation-delay: 0.3s; }
+  .card:nth-child(7) { animation-delay: 0.35s; }
+  .card:nth-child(8) { animation-delay: 0.4s; }
+  .card:nth-child(9) { animation-delay: 0.45s; }
+
+  /* EDITABLE FIELDS */
+  [contenteditable="true"] {
+    outline: none;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.2s;
+    min-width: 20px;
+    display: inline-block;
+  }
+  [contenteditable="true"]:focus {
+    border-bottom: 1px dashed var(--mauve);
+  }
+
+  /* SECTION LABEL */
+  .section-sep {
+    grid-column: span 3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0 2px;
+  }
+
+  .section-sep-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  .section-sep-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    white-space: nowrap;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: 1fr; }
+    .grid-2, .grid-3, .grid-1 { grid-column: span 1; }
+    .section-sep { grid-column: span 1; }
+    .week-grid { grid-template-columns: repeat(4, 1fr); }
+    .sport-week { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div class="week-label">Semaine du <span id="weekDate" contenteditable="true">31 mars — 6 avril 2026</span></div>
+      <div class="week-label" style="background:rgba(196,207,194,0.2)">✦ My Space</div>
+    </div>
+    <h1>my <em>weekly</em><br>sanctuary ✦</h1>
+    <p class="header-sub">Plan. Flow. Thrive. — éditable partout, clique pour modifier</p>
+    <div class="deco-line"></div>
+  </div>
+
+  <div class="grid">
+
+    <!-- SECTION: ROUTINES -->
+    <div class="section-sep">
+      <div class="section-sep-text">✦ Routines</div>
+      <div class="section-sep-line"></div>
+    </div>
+
+    <!-- MORNING ROUTINE -->
+    <div class="card blush grid-1">
+      <div class="card-header">
+        <span class="card-icon">🌅</span>
+        <span class="card-title">Morning Ritual</span>
+        <span class="card-tag">daily</span>
+      </div>
+      <div class="routine-list" id="morningList">
+        <div class="routine-item" onclick="toggleCheck(this)">
+          <span class="routine-time">06:30</span>
+          <div class="routine-check"></div>
+          <span class="routine-label">Réveil — pas de snooze 🤍</span>
+        </div>
+        <div class="routine-item" onclick="toggleCheck(this)">
+          <span class="routine-time">06:35</span>
+          <div class="routine-check"></div>
+          <span class="routine-label">500ml eau tiède + citron 🍋</span>
+        </div>
+        <div class="routine-item" onclick="toggleCheck(this)">
+          <span class="routine-time">06:45</span>
+          <div class="routine-check"></div>
+          <span class="routine-label">Étirements / mobilité 10min</span>
+        </div>
+        <div class="routine-item" onclick="toggleCheck(this)">
+          <span class="routine-time">07:00</span>
+          <div class="routine-check"></div>
+          <span class="routine-label">Sport avec Rania 💪</span>
+        </div>
+        <div class="routine-item" onclick="toggleCheck(this)">
+          <span class="routine-time">08:00</span>
+          <div class="routine-check"></div>
+          <span class="routine-label">Douche + skincare routine</span>
+        </div>
+        <div class="routine-item" onclick="toggleCheck(this)">
+          <span class="routine-time">08:30</span>
+          <div class="routine-check"></div>
+          <span class="routine-label">Petit déj protéiné 🥣</span>
+        </div>
+        <div class="routine-item" onclick="toggleCheck(this)">
+          <span class="routine-time">09:00</span>
+          <div class="routine-check"></div>
+          <span class="routine-label">Revue to-do du jour ✅</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- HYDRATION -->
+    <div class="card sage grid-1">
+      <div class="card-header">
+        <span class="card-icon">💧</span>
+        <span class="card-title">Hydratation</span>
+        <span class="card-tag">2L / jour</span>
+      </div>
+      <div class="water-tracker">
+        <div class="water-glasses" id="waterGlasses">
+          <div class="glass" onclick="toggleGlass(this)">🫙</div>
+          <div class="glass" onclick="toggleGlass(this)">🫙</div>
+          <div class="glass" onclick="toggleGlass(this)">🫙</div>
+          <div class="glass" onclick="toggleGlass(this)">🫙</div>
+          <div class="glass" onclick="toggleGlass(this)">🫙</div>
+          <div class="glass" onclick="toggleGlass(this)">🫙</div>
+          <div class="glass" onclick="toggleGlass(this)">🫙</div>
+          <div class="glass" onclick="toggleGlass(this)">🫙</div>
+        </div>
+        <div class="water-label"><span class="water-count" id="waterCount">0</span> / 8 verres</div>
+
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+          <div class="card-header" style="margin-bottom: 12px;">
+            <span class="card-icon">☕</span>
+            <span class="card-title" style="font-size: 15px;">Mood & Énergie</span>
+          </div>
+          <div class="mood-row" id="moodRow">
+            <div class="mood-btn" onclick="selectMood(this)"><div class="mood-emoji">😴</div><div class="mood-label">fatiguée</div></div>
+            <div class="mood-btn" onclick="selectMood(this)"><div class="mood-emoji">😊</div><div class="mood-label">bien</div></div>
+            <div class="mood-btn" onclick="selectMood(this)"><div class="mood-emoji">⚡</div><div class="mood-label">en feu</div></div>
+            <div class="mood-btn" onclick="selectMood(this)"><div class="mood-emoji">😤</div><div class="mood-label">stressée</div></div>
+          </div>
+          <div class="energy-label"><span>Énergie</span><span id="energyVal">60%</span></div>
+          <div class="energy-bar" onclick="setEnergy(event)">
+            <div class="energy-fill" id="energyFill" style="width: 60%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENING ROUTINE -->
+    <div class="card lavender grid-1">
+      <div class="card-header">
+        <span class="card-icon">🌙</span>
+        <span class="card-title">Evening Wind-down</span>
+        <span class="card-tag">nightly</span>
+      </div>
+      <div class="evening-list">
+        <div class="evening-item" onclick="toggleEveningCheck(this)">
+          <span class="evening-time">19:30</span>
+          <span class="evening-label">Préparer le dîner 🍽️</span>
+          <div class="evening-check"></div>
+        </div>
+        <div class="evening-item" onclick="toggleEveningCheck(this)">
+          <span class="evening-time">20:30</span>
+          <span class="evening-label">No-screen time — lecture 📖</span>
+          <div class="evening-check"></div>
+        </div>
+        <div class="evening-item" onclick="toggleEveningCheck(this)">
+          <span class="evening-time">21:00</span>
+          <span class="evening-label">Journaling / gratitude ✨</span>
+          <div class="evening-check"></div>
+        </div>
+        <div class="evening-item" onclick="toggleEveningCheck(this)">
+          <span class="evening-time">21:30</span>
+          <span class="evening-label">Skincare evening routine 🌸</span>
+          <div class="evening-check"></div>
+        </div>
+        <div class="evening-item" onclick="toggleEveningCheck(this)">
+          <span class="evening-time">22:00</span>
+          <span class="evening-label">Prep tenue du lendemain 👗</span>
+          <div class="evening-check"></div>
+        </div>
+        <div class="evening-item" onclick="toggleEveningCheck(this)">
+          <span class="evening-time">22:30</span>
+          <span class="evening-label">Lights off 🌙 dodo</span>
+          <div class="evening-check"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: PLANNING -->
+    <div class="section-sep">
+      <div class="section-sep-text">✦ Planning & Goals</div>
+      <div class="section-sep-line"></div>
+    </div>
+
+    <!-- WEEKLY PLANNER -->
+    <div class="card blush grid-3">
+      <div class="card-header">
+        <span class="card-icon">📅</span>
+        <span class="card-title">Planning de la semaine</span>
+        <span class="card-tag">éditable</span>
+      </div>
+      <div class="week-grid">
+        <div class="day-col">
+          <div class="day-name today">Lun</div>
+          <div class="day-event work" contenteditable="true">Stand-up 9h</div>
+          <div class="day-event sport" contenteditable="true">Sport 7h</div>
+          <div class="day-event perso" contenteditable="true">Passation docs</div>
+        </div>
+        <div class="day-col">
+          <div class="day-name">Mar</div>
+          <div class="day-event work" contenteditable="true">Réunion ADE</div>
+          <div class="day-event food" contenteditable="true">Meal prep</div>
+          <div class="add-event-btn">+</div>
+        </div>
+        <div class="day-col">
+          <div class="day-name">Mer</div>
+          <div class="day-event sport" contenteditable="true">Sport 7h</div>
+          <div class="day-event work" contenteditable="true">Code review</div>
+          <div class="day-event perso" contenteditable="true">Soirée séries</div>
+        </div>
+        <div class="day-col">
+          <div class="day-name">Jeu</div>
+          <div class="day-event work" contenteditable="true">Sprint review</div>
+          <div class="day-event perso" contenteditable="true">Lecture 📖</div>
+          <div class="add-event-btn">+</div>
+        </div>
+        <div class="day-col">
+          <div class="day-name">Ven</div>
+          <div class="day-event sport" contenteditable="true">Sport 7h</div>
+          <div class="day-event work" contenteditable="true">Dernière MEP</div>
+          <div class="day-event perso" contenteditable="true">Soirée amis 🥂</div>
+        </div>
+        <div class="day-col">
+          <div class="day-name">Sam</div>
+          <div class="day-event food" contenteditable="true">Marché 🛒</div>
+          <div class="day-event perso" contenteditable="true">Shooting photo</div>
+          <div class="day-event perso" contenteditable="true">Spa / self-care</div>
+        </div>
+        <div class="day-col">
+          <div class="day-name">Dim</div>
+          <div class="day-event food" contenteditable="true">Batch cooking</div>
+          <div class="day-event perso" contenteditable="true">Prep semaine</div>
+          <div class="day-event empty">repos ✦</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOALS -->
+    <div class="card mauve grid-1">
+      <div class="card-header">
+        <span class="card-icon">🎯</span>
+        <span class="card-title">Weekly Goals</span>
+        <span class="card-tag">intentions</span>
+      </div>
+      <div class="goals-list">
+        <div class="goal-item">
+          <div class="goal-dot pink"></div>
+          <span class="goal-text" contenteditable="true">Finir la passation Squad Dingo ✨</span>
+          <span class="goal-status progress">en cours</span>
+        </div>
+        <div class="goal-item">
+          <div class="goal-dot green"></div>
+          <span class="goal-text" contenteditable="true">3 séances sport cette semaine</span>
+          <span class="goal-status todo">à faire</span>
+        </div>
+        <div class="goal-item">
+          <div class="goal-dot purple"></div>
+          <span class="goal-text" contenteditable="true">Lire 50 pages du livre en cours</span>
+          <span class="goal-status progress">en cours</span>
+        </div>
+        <div class="goal-item">
+          <div class="goal-dot caramel"></div>
+          <span class="goal-text" contenteditable="true">Préparer meals du lundi au vendredi</span>
+          <span class="goal-status todo">à faire</span>
+        </div>
+        <div class="goal-item">
+          <div class="goal-dot pink"></div>
+          <span class="goal-text" contenteditable="true">Airbnb : relancer le dossier banque</span>
+          <span class="goal-status todo">à faire</span>
+        </div>
+        <div class="goal-item">
+          <div class="goal-dot green"></div>
+          <span class="goal-text" contenteditable="true">Journaling 5 soirs sur 7</span>
+          <span class="goal-status done">✓ done</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION: LIFESTYLE -->
+    <div class="section-sep">
+      <div class="section-sep-text">✦ Lifestyle</div>
+      <div class="section-sep-line"></div>
+    </div>
+
+    <!-- SPORT TRACKER -->
+    <div class="card sage grid-1">
+      <div class="card-header">
+        <span class="card-icon">💪</span>
+        <span class="card-title">Sport Tracker</span>
+        <span class="card-tag">Rania</span>
+      </div>
+      <div class="sport-week">
+        <div class="sport-day">
+          <div class="sport-day-name">Lun</div>
+          <div class="sport-dot done" onclick="toggleSport(this)">🏋️</div>
+          <div class="sport-type-tag" contenteditable="true">muscu</div>
+        </div>
+        <div class="sport-day">
+          <div class="sport-day-name">Mar</div>
+          <div class="sport-dot rest" onclick="toggleSport(this)">😴</div>
+          <div class="sport-type-tag" contenteditable="true">repos</div>
+        </div>
+        <div class="sport-day">
+          <div class="sport-day-name">Mer</div>
+          <div class="sport-dot done" onclick="toggleSport(this)">🏃</div>
+          <div class="sport-type-tag" contenteditable="true">cardio</div>
+        </div>
+        <div class="sport-day">
+          <div class="sport-day-name">Jeu</div>
+          <div class="sport-dot" onclick="toggleSport(this)">○</div>
+          <div class="sport-type-tag" contenteditable="true">—</div>
+        </div>
+        <div class="sport-day">
+          <div class="sport-day-name">Ven</div>
+          <div class="sport-dot" onclick="toggleSport(this)">○</div>
+          <div class="sport-type-tag" contenteditable="true">—</div>
+        </div>
+        <div class="sport-day">
+          <div class="sport-day-name">Sam</div>
+          <div class="sport-dot rest" onclick="toggleSport(this)">😴</div>
+          <div class="sport-type-tag" contenteditable="true">repos</div>
+        </div>
+        <div class="sport-day">
+          <div class="sport-day-name">Dim</div>
+          <div class="sport-dot" onclick="toggleSport(this)">○</div>
+          <div class="sport-type-tag" contenteditable="true">—</div>
+        </div>
+      </div>
+      <div style="padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-light); font-family: 'Space Mono', monospace; text-align: center;">
+        2 / 3 séances cette semaine ✦
+      </div>
+    </div>
+
+    <!-- MEAL PREP -->
+    <div class="card caramel grid-1">
+      <div class="card-header">
+        <span class="card-icon">🍽️</span>
+        <span class="card-title">Meal Prep</span>
+        <span class="card-tag">semaine</span>
+      </div>
+      <div class="meal-grid">
+        <div class="meal-card">
+          <div class="meal-day">Lun</div>
+          <div class="meal-name" contenteditable="true">Bowl quinoa poulet</div>
+          <div class="meal-type" contenteditable="true">🥗 Déj + Dîner</div>
+        </div>
+        <div class="meal-card">
+          <div class="meal-day">Mar</div>
+          <div class="meal-name" contenteditable="true">Pasta au saumon</div>
+          <div class="meal-type" contenteditable="true">🍝 Dîner</div>
+        </div>
+        <div class="meal-card">
+          <div class="meal-day">Mer</div>
+          <div class="meal-name" contenteditable="true">Soupe lentilles</div>
+          <div class="meal-type" contenteditable="true">🍲 Déj</div>
+        </div>
+        <div class="meal-card">
+          <div class="meal-day">Jeu</div>
+          <div class="meal-name" contenteditable="true">Riz + légumes wok</div>
+          <div class="meal-type" contenteditable="true">🥢 Dîner</div>
+        </div>
+        <div class="meal-card">
+          <div class="meal-day">Ven</div>
+          <div class="meal-name" contenteditable="true">Wrap avocat thon</div>
+          <div class="meal-type" contenteditable="true">🥙 Déj</div>
+        </div>
+        <div class="meal-card">
+          <div class="meal-day">Week-end</div>
+          <div class="meal-name" contenteditable="true">Brunch + à improviser</div>
+          <div class="meal-type" contenteditable="true">🥞 plaisir</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- READING -->
+    <div class="card lavender grid-1">
+      <div class="card-header">
+        <span class="card-icon">📚</span>
+        <span class="card-title">Reading List</span>
+        <span class="card-tag">50 pages / sem</span>
+      </div>
+      <div class="book-item">
+        <div class="book-spine" style="background: var(--mauve)"></div>
+        <div class="book-info">
+          <div class="book-title" contenteditable="true">Atomic Habits</div>
+          <div class="book-author" contenteditable="true">James Clear — en cours ✦</div>
+          <div class="book-progress"><div class="book-progress-bar" style="width: 65%"></div></div>
+        </div>
+        <div style="font-size: 11px; font-family: 'Space Mono', monospace; color: var(--text-light); align-self: flex-end;">65%</div>
+      </div>
+      <div class="book-item">
+        <div class="book-spine" style="background: var(--sage-dark)"></div>
+        <div class="book-info">
+          <div class="book-title" contenteditable="true">The Psychology of Money</div>
+          <div class="book-author" contenteditable="true">Morgan Housel — à lire</div>
+          <div class="book-progress"><div class="book-progress-bar" style="width: 0%"></div></div>
+        </div>
+        <div style="font-size: 11px; font-family: 'Space Mono', monospace; color: var(--text-light); align-self: flex-end;">0%</div>
+      </div>
+      <div class="book-item">
+        <div class="book-spine" style="background: var(--caramel)"></div>
+        <div class="book-info">
+          <div class="book-title" contenteditable="true">Brave New World</div>
+          <div class="book-author" contenteditable="true">Huxley — backlog</div>
+          <div class="book-progress"><div class="book-progress-bar" style="width: 20%"></div></div>
+        </div>
+        <div style="font-size: 11px; font-family: 'Space Mono', monospace; color: var(--text-light); align-self: flex-end;">20%</div>
+      </div>
+    </div>
+
+    <!-- TODO -->
+    <div class="card blush grid-2">
+      <div class="card-header">
+        <span class="card-icon">✅</span>
+        <span class="card-title">To-Do</span>
+        <span class="card-tag">clic pour cocher</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div>
+          <div class="todo-section">
+            <div class="todo-section-title">💼 Pro</div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox"></div>
+              <span class="todo-text" contenteditable="true">Finaliser doc passation K7</span>
+              <div class="todo-priority" style="background: var(--mauve)"></div>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox"></div>
+              <span class="todo-text" contenteditable="true">Préparer réunion ADE mardi</span>
+              <div class="todo-priority" style="background: var(--mauve)"></div>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox"></div>
+              <span class="todo-text" contenteditable="true">Review CVE SonarQube K7</span>
+              <div class="todo-priority" style="background: var(--caramel)"></div>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox checked"></div>
+              <span class="todo-text done" contenteditable="true">Handover planning HTML</span>
+              <div class="todo-priority" style="background: var(--sage-dark)"></div>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox"></div>
+              <span class="todo-text" contenteditable="true">Préparer Datadog interview</span>
+              <div class="todo-priority" style="background: var(--caramel)"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="todo-section">
+            <div class="todo-section-title">🌸 Perso</div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox"></div>
+              <span class="todo-text" contenteditable="true">Rendez-vous Airbnb banque</span>
+              <div class="todo-priority" style="background: var(--lavender-dark)"></div>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox"></div>
+              <span class="todo-text" contenteditable="true">Acheter crème SPF 50 ☀️</span>
+              <div class="todo-priority" style="background: var(--sage-dark)"></div>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox checked"></div>
+              <span class="todo-text done" contenteditable="true">Renouveler abonnement gym</span>
+              <div class="todo-priority" style="background: var(--sage-dark)"></div>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox"></div>
+              <span class="todo-text" contenteditable="true">Poster contenu Instagram 📸</span>
+              <div class="todo-priority" style="background: var(--lavender-dark)"></div>
+            </div>
+            <div class="todo-item" onclick="toggleTodo(this)">
+              <div class="todo-checkbox"></div>
+              <span class="todo-text" contenteditable="true">Appeler mama 📞</span>
+              <div class="todo-priority" style="background: var(--mauve)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FINANCE -->
+    <div class="card sage grid-1">
+      <div class="card-header">
+        <span class="card-icon">💸</span>
+        <span class="card-title">Finance Snapshot</span>
+        <span class="card-tag">semaine</span>
+      </div>
+      <div class="finance-row">
+        <div class="finance-label"><span>💰</span> Salaire / entrées</div>
+        <div class="finance-amount positive" contenteditable="true">+3 800 €</div>
+      </div>
+      <div class="finance-row">
+        <div class="finance-label"><span>🏠</span> Loyer + charges</div>
+        <div class="finance-amount negative" contenteditable="true">-900 €</div>
+      </div>
+      <div class="finance-row">
+        <div class="finance-label"><span>🛒</span> Courses / restau</div>
+        <div class="finance-amount negative" contenteditable="true">-180 €</div>
+      </div>
+      <div class="finance-row">
+        <div class="finance-label"><span>🚗</span> Tesla + assurances</div>
+        <div class="finance-amount negative" contenteditable="true">-320 €</div>
+      </div>
+      <div class="finance-row">
+        <div class="finance-label"><span>💎</span> Épargne Airbnb</div>
+        <div class="finance-amount positive" contenteditable="true">+500 €</div>
+      </div>
+      <div class="finance-row" style="border-top: 1.5px solid var(--border); margin-top: 4px; padding-top: 14px;">
+        <div class="finance-label" style="font-weight: 600; color: var(--text-dark);">💼 Disponible</div>
+        <div class="finance-amount neutral" contenteditable="true">≈ 1 400 €</div>
+      </div>
+    </div>
+
+    <!-- SECTION: INSPIRATIONS -->
+    <div class="section-sep">
+      <div class="section-sep-text">✦ Intentions</div>
+      <div class="section-sep-line"></div>
+    </div>
+
+    <!-- QUOTE -->
+    <div class="quote-card grid-2" style="animation: fadeSlideUp 0.7s ease 0.5s both;">
+      <div class="quote-mark">"</div>
+      <div class="quote-text" contenteditable="true">She remembered who she was and the game changed.</div>
+      <div class="quote-author" contenteditable="true">— Lalah Delia ✦</div>
+    </div>
+
+    <!-- GRATITUDE / NOTES -->
+    <div class="card lavender grid-1">
+      <div class="card-header">
+        <span class="card-icon">🌿</span>
+        <span class="card-title">Gratitude & Notes</span>
+        <span class="card-tag">daily journal</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="padding: 10px 14px; background: rgba(216,212,232,0.25); border-radius: 12px; font-size: 13px; color: var(--text-mid); border: 1px dashed rgba(168,160,192,0.3); min-height: 40px;" contenteditable="true">Aujourd'hui je suis reconnaissante pour…</div>
+        <div style="padding: 10px 14px; background: rgba(216,212,232,0.25); border-radius: 12px; font-size: 13px; color: var(--text-mid); border: 1px dashed rgba(168,160,192,0.3); min-height: 40px;" contenteditable="true">Une chose qui m'a fait sourire…</div>
+        <div style="padding: 10px 14px; background: rgba(216,212,232,0.25); border-radius: 12px; font-size: 13px; color: var(--text-mid); border: 1px dashed rgba(168,160,192,0.3); min-height: 40px;" contenteditable="true">Mon intention pour demain…</div>
+      </div>
+    </div>
+
+  </div><!-- end grid -->
+</div><!-- end container -->
+
+<script>
+  function toggleCheck(item) {
+    const check = item.querySelector('.routine-check');
+    check.classList.toggle('checked');
+  }
+
+  function toggleGlass(glass) {
+    glass.classList.toggle('filled');
+    const filled = document.querySelectorAll('.glass.filled').length;
+    document.getElementById('waterCount').textContent = filled;
+  }
+
+  function selectMood(btn) {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function setEnergy(e) {
+    const bar = e.currentTarget;
+    const rect = bar.getBoundingClientRect();
+    const pct = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+    document.getElementById('energyFill').style.width = pct + '%';
+    document.getElementById('energyVal').textContent = pct + '%';
+  }
+
+  function toggleTodo(item) {
+    if (event.target.contentEditable === 'true') return;
+    const check = item.querySelector('.todo-checkbox');
+    const text = item.querySelector('.todo-text');
+    check.classList.toggle('checked');
+    text.classList.toggle('done');
+  }
+
+  function toggleEveningCheck(item) {
+    const check = item.querySelector('.evening-check');
+    check.classList.toggle('checked');
+  }
+
+  function toggleSport(dot) {
+    const states = ['', 'done', 'rest'];
+    const current = states.indexOf([...dot.classList].find(c => states.includes(c)) || '');
+    dot.classList.remove(...states.filter(Boolean));
+    const next = states[(current + 1) % states.length];
+    if (next) dot.classList.add(next);
+    const emojis = ['○', '🏋️', '😴'];
+    dot.textContent = emojis[(current + 1) % 3];
+  }
+
+  // Prevent clicks on contenteditable from triggering parent onclick
+  document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+    el.addEventListener('click', e => e.stopPropagation());
+  });
+
+  // Set current week date
+  const now = new Date();
+  const mon = new Date(now);
+  mon.setDate(now.getDate() - now.getDay() + 1);
+  const sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  document.getElementById('weekDate').textContent = `${fmt(mon)} — ${fmt(sun)} ${now.getFullYear()}`;
+</script>
+</body>
+</html>
